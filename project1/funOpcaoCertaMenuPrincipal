@@ -1,0 +1,11 @@
+/*Evitar erro na seleção da opção de entrada*/
+/*char erroSelecaoInicial(char opcao[])
+{
+    while (strcmp(opcao, "1") && strcmp(opcao, "2") && strcmp(opcao, "3"))
+    {
+        printf("\n\t[ ERRO: Opção não exitente ]\n\n");
+        printf("*Tente novamente: ");
+        scanf("%s", opcao);
+    }
+    return opcao;
+}*/
