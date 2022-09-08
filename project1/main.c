@@ -8,7 +8,7 @@ typedef struct
     int senha;
     char nome[30];
     int idade;
-    char estado[2];
+    char estado[3];
 } reg_dadoCidadao;
 
 void menuInicial()
@@ -24,6 +24,7 @@ void menuInicial()
     printf("* Escolha uma das opções acima: ");
 }
 
+
 void menuCidadao()
 {
     printf("\t----------------------------");
@@ -38,6 +39,7 @@ void menuCidadao()
     printf("* Escolha uma das opções acima: ");
 }
 
+
 int erroSelecaoCidadao(int opcao)
 {
     while (opcao < 0 || opcao > 4)
@@ -49,6 +51,7 @@ int erroSelecaoCidadao(int opcao)
     return opcao;
 }
 
+
 void gerarSenha(reg_dadoCidadao dadosCidadao[], int senhaNv, int position)
 {
     int i;
@@ -59,12 +62,48 @@ void gerarSenha(reg_dadoCidadao dadosCidadao[], int senhaNv, int position)
     }
 }
 
+/*
+char erroSelecaoInicial(char *opcao)
+{
+    while (strcmp(*opcao, "1") && strcmp(*opcao, "2") && strcmp(*opcao, "3") && strcmp(*opcao, "S"))
+    {
+        printf("\n\t[ ERRO: OPÇÃO INVALIDA!! ]\n\n");
+        printf("*Tente novamente: ");
+        scanf("%s", *opcao);
+    }
+    return *opcao;
+}
+*/
+
+
+void enfileiraIdoso(int *i, int *f, reg_dadoCidadao Fila[100], int codigo, int senha, char nome[30], int idade, char estado[3])
+{
+    if (*f != *i || *f == -1) {
+        if (*f == -1) {
+            *i = 0;
+            *f = 0;
+        }
+        Fila[*f].codigo = codigo;
+        Fila[*f].senha = senha;
+        strcpy(Fila[*f].nome, nome);
+        Fila[*f].idade = idade;
+        strcpy(Fila[*f].estado, estado);
+
+        *f = (*f + 1) % 100;
+    }
+    else
+    {
+        printf("------------------------------\nFila cheia!\n------------------------------");
+    }    
+}
+
 int main(void)
 {
     int opcaoCidadao, codigoPesquisa, qtdCidadao, find, i, j, exist, opcaoAtualizar;
     int codigoGerarSenha, position, opcaoAtendimento, senhaIdoso, senhaNovo, qtdIdoso, qtdNovo, controleSenha;
-    reg_dadoCidadao dadosCidadao[500], filaIdoso[500], filaNovo[500];
-    char opcaoInicial[1];
+    int  iFila, fFila ; /*numMesa*/
+     reg_dadoCidadao dadosCidadao[500], filaIdoso[500], filaNovo[500];
+    char opcaoInicial[1], servidoPublico[30];
     int operacoesCidadao(void);
     int erroSelecaoCidadao(int);
     /*char erroSelecaoInicial(char);*/
@@ -75,6 +114,8 @@ int main(void)
     qtdIdoso = 0;
     qtdNovo = 0;
     controleSenha = 0;
+    iFila = -1;
+    fFila = -1;
 
     menuInicial();
     scanf("%s", opcaoInicial);
@@ -89,6 +130,7 @@ int main(void)
 
     while (strcmp(opcaoInicial, "1") || strcmp(opcaoInicial, "2") || strcmp(opcaoInicial, "3") || strcmp(opcaoInicial, "S"))
     {
+        /* ---------------------- OPÇÃO 1 CIDADÃO -------------------------------------------- */
         if (!strcmp(opcaoInicial, "1"))
         {
             printf("\n******************************************************************\n");
@@ -96,10 +138,10 @@ int main(void)
 
             menuCidadao();
             scanf("%d", &opcaoCidadao);
+            opcaoCidadao = erroSelecaoCidadao(opcaoCidadao);
 
             while (opcaoCidadao != 0)
             {
-                opcaoCidadao = erroSelecaoCidadao(opcaoCidadao);
 
                 /*OPÇÃO 1 CADASTRAR --------------------------------------------------------------------------------------------------------------------------*/
                 if (opcaoCidadao == 1)
@@ -335,7 +377,7 @@ int main(void)
                 printf("* Insira o codigo do cidadão que deseja uma senha: ");
                 scanf("%d", &codigoGerarSenha);
 
-                for (i = 0; i < qtdCidadao; i++)
+                for (i = 0; i < qtdCidadao; i++) /*Procura se tem codigo cadastrado*/
                 {
                     if (codigoGerarSenha == dadosCidadao[i].codigo)
                     {             /*Encontra aposição que esta a escolha*/
@@ -344,16 +386,17 @@ int main(void)
                     }
                 }
 
-                if (find != 1)
+                if (find != 1) /*Caso não encontrar o codigo*/
                 {
                     printf("\n\t----------------------------\n");
                     printf("\t Código não cadastrado.");
                     printf("\n\t----------------------------\n");
                 }
 
-                if (find == 1)
+                if (find == 1) /* Caso encontrar o codigo */
                 {
-                    printf("\n\t----------------------------\n");
+                    /* Opções de atendimnto */
+                    printf("\n\t----------------------------\n"); 
                     printf("\t  *** SELECIONE O TIPO DE ATENDIMENTO *** \n");
                     printf("\t 1 DOCUMENTOS");
                     printf("\n\t 2 TRANSPORTES");
@@ -361,6 +404,8 @@ int main(void)
                     printf("\n\t----------------------------\n");
                     printf("* Escolha uma das opções acima: ");
                     scanf("%d", &opcaoAtendimento);
+
+                    /*Caso entrar com valores diferentes do disponivel*/
                     while (opcaoAtendimento != 1 && opcaoAtendimento != 2 && opcaoAtendimento != 3)
                     {
                         printf("\n\t[ ERRO: OPÇÃO INVALIDA!! ]\n\n");
@@ -381,12 +426,21 @@ int main(void)
                         break;
                     }
 
-                    if (dadosCidadao[position].idade >= 65)
+                    if (dadosCidadao[position].idade >= 65) /* Caso Maior de 65*/
                     {
                         senhaIdoso++; /*Controle de quantidade de senhas*/
-                        qtdIdoso++;
+                        qtdIdoso++;  /* Tamanho do vetor */
                         gerarSenha(dadosCidadao, senhaIdoso, position);
 
+                        enfileiraIdoso(&iFila, &fFila, filaIdoso,
+                            dadosCidadao[position].codigo,
+                            dadosCidadao[position].senha,
+                            dadosCidadao[position].nome,
+                            dadosCidadao[position].idade,
+                            dadosCidadao[position].estado
+                        );
+
+                        /*
                         filaIdoso[senhaIdoso - 1].codigo = dadosCidadao[position].codigo;
 
                         filaIdoso[senhaIdoso - 1].senha = dadosCidadao[position].senha;
@@ -396,6 +450,8 @@ int main(void)
                         filaIdoso[senhaIdoso - 1].idade = dadosCidadao[position].idade;
 
                         strcpy(filaIdoso[senhaIdoso - 1].estado, dadosCidadao[position].estado);
+                        */
+                        
                     }
                     else
                     {
@@ -424,6 +480,7 @@ int main(void)
             }
 
 
+                    printf("\n ----*** Qtd Idoso: %d *** ----\n", qtdIdoso);
 
             if (qtdIdoso > 0)
             {
@@ -494,9 +551,18 @@ int main(void)
         /* ---------------------- ATENDIMENTO AO CIDADÃO --------------------------------- */
         if (!strcmp(opcaoInicial, "3"))
         {
-            printf("\n----------------------------------\n");
+            printf("\n******************************************************************\n");
             printf("* OPÇÃO 3: ATENDIMENTO AO CIDADÃO");
-            printf("\n----------------------------------\n");
+
+            /*
+            printf("Insira o nome do Servidor público: ");
+            scanf("%s", servidoPublico);
+
+            printf("Insira o numero da mesa: ");
+            scanf("%s", numMesa);
+            */
+
+           printf("\n******************************************************************\n");
         }
 
         /* ----------------------  SAIR --------------------------------------------------- */
