@@ -93,9 +93,27 @@ void enfileiraIdoso(int *i, int *f, reg_dadoCidadao Fila[100], int codigo, int s
     }
     else
     {
-        printf("------------------------------\nFila cheia!\n------------------------------");
+        printf("\n------------------------------\nFila cheia!\n------------------------------\n");
     }    
 }
+
+
+int desenfileira_Idoso(int *i, int *f, reg_dadoCidadao F[100])
+{
+    int r = F->senha ;
+    if (*i != -1) {
+        r = F[*i].senha;
+        *i = (*i + 1) % 100;
+        if (*i == *f) {
+            *i = -1;
+            *f = -1;
+        }
+    }
+    else
+        printf("Fila vazia!\n");
+    return r;
+}
+
 
 int main(void)
 {
@@ -108,14 +126,14 @@ int main(void)
     int erroSelecaoCidadao(int);
     /*char erroSelecaoInicial(char);*/
 
-    qtdCidadao = 0;
-    senhaIdoso = 0;
-    senhaNovo = 0;
-    qtdIdoso = 0;
-    qtdNovo = 0;
-    controleSenha = 0;
-    iFila = -1;
-    fFila = -1;
+    qtdCidadao = 0; /*Controle de Quantidade de cadastros*/
+    senhaIdoso = 0; /*Para gerar senha a partir de 0, 1, 2...conforme posição na fila*/
+    senhaNovo = 0; /*Para gerar senha a partir de 0, 1, 2...conforme posição na fila*/
+    qtdIdoso = 0; /*quantidade de senhas para maiores de 65*/ 
+    qtdNovo = 0; /*quantidade de senhas para menores de 65*/
+    controleSenha = 0; /* Contola quantidade de senha de no maximo 100 por dia*/
+    iFila = -1; /* Indica inicio da Fila*/
+    fFila = -1; /* Indica final da Fila*/
 
     menuInicial();
     scanf("%s", opcaoInicial);
@@ -479,8 +497,7 @@ int main(void)
                 printf("\n[ ERRO: QUANTIDADE MÁXIMA DE ATENDIMENTOS DIÁRIA ATINGIDA. ]\n ** Volte amanhã!\n");
             }
 
-
-                    printf("\n ----*** Qtd Idoso: %d *** ----\n", qtdIdoso);
+            printf("\n ----*** Qtd Idoso: %d *** ----\n", qtdIdoso);
 
             if (qtdIdoso > 0)
             {
@@ -568,9 +585,28 @@ int main(void)
         /* ----------------------  SAIR --------------------------------------------------- */
         if (!strcmp(opcaoInicial, "S"))
         {
-            printf("\n----------------------------------\n");
-            printf("* OPÇÃO S: SAIR");
-            printf("\n----------------------------------\n");
+            printf("\n******************************************************************\n");
+
+            printf("* OPÇÃO S: SAIR\n");
+
+            if (controleSenha > 0)
+            {
+                controleSenha--;
+
+                aux = desenfileira_Idoso(iFila, fFila, filaIdoso)
+
+
+                printf("------------------\n Chamando as filas \n------------------");
+
+                printf("\n******************************************************************\n");
+
+        
+            } else {
+                printf("------------------\n Filas vazias \n------------------");
+                printf("\n******************************************************************\n");
+                return 0;
+            }
+
         }
 
         menuInicial();
